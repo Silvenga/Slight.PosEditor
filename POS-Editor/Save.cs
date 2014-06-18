@@ -19,6 +19,16 @@ namespace POS_Editor {
             set;
         }
 
+        public int? Columns {
+            get;
+            set;
+        }
+
+        public int? Rows {
+            get;
+            set;
+        }
+
         public static void SaveObject(Save obj) {
 
             string json = new JavaScriptSerializer().Serialize(obj);

@@ -17,6 +17,37 @@ namespace POS_Editor {
 
         private readonly ObservableCollection<string> _comPorts;
         private string _comName;
+        private int _rows;
+        private int _columns;
+
+        public int Rows {
+            get {
+                return _rows;
+            }
+            set {
+
+                _rows = value;
+                OnPropertyChanged("Rows");
+                OnPropertyChanged("IsReady");
+
+                if(Rows <= 0)
+                    throw new ApplicationException();
+            }
+        }
+
+        public int Columns {
+            get {
+                return _columns;
+            }
+            set {
+                _columns = value;
+                OnPropertyChanged("Columns");
+                OnPropertyChanged("IsReady");
+
+                if(Columns <= 0)
+                    throw new ApplicationException();
+            }
+        }
 
         public string ComName {
             get {
@@ -26,6 +57,9 @@ namespace POS_Editor {
                 _comName = value;
                 OnPropertyChanged("ComName");
                 OnPropertyChanged("IsReady");
+
+                if(!PosManager.DoesDeviceExist(ComName))
+                    throw new ApplicationException();
             }
         }
 
@@ -36,7 +70,7 @@ namespace POS_Editor {
 
         public bool IsReady {
             get {
-                return PosManager.DoesDeviceExist(ComName);
+                return PosManager.DoesDeviceExist(ComName) && Rows > 0 && Columns > 0;
             }
         }
 
@@ -55,11 +89,16 @@ namespace POS_Editor {
             _comPorts = new ObservableCollection<string>();
 
             InitializeComponent();
+
+            Rows = 4;
+            Columns = 20;
+
             ComBox.ItemsSource = _comPorts;
 
             Main();
 
             StartThreads();
+
         }
 
         private void CurrentDomainOnUnhandledException(object sender, UnhandledExceptionEventArgs unhandledExceptionEventArgs) {
@@ -68,7 +107,7 @@ namespace POS_Editor {
 
             string message = "";
 
-            message += "\nCrashed on: " + e.Message;
+            message += "\nCrashed on: " + e.Message + "\nSource: " + e.Source + "\nTrace: " + e.StackTrace + "\n Due to: " + e.InnerException;
 
             File.AppendAllText("com.silvenga.pos-editor.crashreport.log", message);
 
@@ -82,7 +121,7 @@ namespace POS_Editor {
 
             for(int i = 0; i < Profiles; i++) {
 
-                ProfileList.Add(new CustomMessageBox());
+                ProfileList.Add(new CustomMessageBox(this));
                 ProfileList[i].Sent += CustomMessageBox_OnSent;
 
                 Binding binding = new Binding("IsReady") {
@@ -93,18 +132,25 @@ namespace POS_Editor {
                 ProfilePanel.Children.Add(ProfileList[i]);
 
                 if(save != null && save.Profiles != null && save.Profiles.Count > i && save.Profiles[i] != null)
-                    ProfileList[i].MessageText.Text = save.Profiles[i];
+                    ProfileList[i].Text = save.Profiles[i];
             }
 
             if(save != null && save.Port != null) {
 
                 _comPorts.Add(save.Port);
 
-
-                int a = ComBox.Items.IndexOf(save.Port);
-
                 if(ComBox.Items.Contains(save.Port))
                     ComBox.SelectedIndex = ComBox.Items.IndexOf(save.Port);
+            }
+
+            if(save != null && save.Columns != null && save.Columns > 0) {
+
+                Columns = (int) save.Columns;
+            }
+
+            if(save != null && save.Rows != null && save.Rows > 0) {
+
+                Rows = (int) save.Rows;
             }
         }
 
@@ -156,7 +202,7 @@ namespace POS_Editor {
         private void CustomMessageBox_OnSent(CustomMessageBox sender, string message) {
 
             PosDisplay display;
-            bool success = PosDisplay.TryParse(sender.MessageText.Text, out display);
+            bool success = PosDisplay.TryParse(sender.Text, out display, Rows, Columns);
 
             if(success) {
 
@@ -171,7 +217,7 @@ namespace POS_Editor {
 
                 PosManager manager = new PosManager(ComName);
 
-                PosDisplay.TryParse("Error: Message too long...", out display);
+                PosDisplay.TryParse("Error: Message too long...", out display, Rows, Columns);
 
                 manager.Send(display);
 
@@ -185,16 +231,17 @@ namespace POS_Editor {
 
             Save save = new Save {
                 Port = ComName,
+                Columns = Columns,
+                Rows = Rows,
                 Profiles = new List<string>()
             };
 
             foreach(CustomMessageBox box in ProfileList) {
 
-                save.Profiles.Add(box.MessageText.Text);
+                save.Profiles.Add(box.Text);
             }
 
             Save.SaveObject(save);
         }
-
     }
 }

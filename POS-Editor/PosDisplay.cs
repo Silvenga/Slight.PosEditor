@@ -7,20 +7,27 @@ using System.Text;
 namespace POS_Editor {
     public class PosDisplay {
 
-        public const int Rows = 4;
-        public const int Columns = 20;
+        public int Rows {
+            get;
+            set;
+        }
 
-        public static bool TryParse(string message, out PosDisplay display) {
+        public int Columns {
+            get;
+            set;
+        }
+
+        public static bool TryParse(string message, out PosDisplay display, int rows, int columns) {
 
             display = default(PosDisplay);
 
             string[] lines;
 
-            bool success = TryParse(message, out lines);
+            bool success = TryParse(message, out lines, rows, columns);
 
             if(success) {
 
-                display = new PosDisplay();
+                display = new PosDisplay(rows, columns);
 
                 for(int i = 0; i < lines.Length; i++) {
 
@@ -31,14 +38,17 @@ namespace POS_Editor {
             return success;
         }
 
-        private static bool TryParse(string message, out string[] wrapped) {
+        private static bool TryParse(string message, out string[] wrapped, int rows, int columns) {
 
-            wrapped = ToLines(Wrap(message));
+            wrapped = ToLines(Wrap(message, columns));
 
-            return wrapped.Length <= Rows && !wrapped.Any(x => x.Length > Columns);
+            return wrapped.Length <= rows && !wrapped.Any(x => x.Length > columns);
         }
 
-        private PosDisplay() {
+        private PosDisplay(int rows, int columns) {
+
+            Rows = rows;
+            Columns = columns;
 
             Display = new char[Rows][];
 
@@ -90,35 +100,9 @@ namespace POS_Editor {
             }
         }
 
-        //        private static string Wrap(string text) {
-        //
-        //            return string.Join(string.Empty, Wrap(text.Split(new char[0], StringSplitOptions.RemoveEmptyEntries)));
-        //        }
-        //
-        //        private static IEnumerable<string> Wrap(IEnumerable<string> words) {
-        //
-        //            var currentWidth = 0;
-        //            foreach(var word in words) {
-        //
-        //                if(currentWidth != 0) {
-        //                    if(currentWidth + word.Length < Columns) {
-        //                        currentWidth++;
-        //                        yield return " ";
-        //
-        //                    } else {
-        //
-        //                        currentWidth = 0;
-        //                        yield return Environment.NewLine;
-        //                    }
-        //                }
-        //                currentWidth += word.Length;
-        //                yield return word;
-        //            }
-        //        }
-
         private static readonly char[] SplitChars = { ' ', '-', '\t' };
 
-        private static string Wrap(string str) {
+        private static string Wrap(string str, int columns) {
 
             string[] words = Explode(str, SplitChars);
 
@@ -129,16 +113,16 @@ namespace POS_Editor {
 
                 string word = words[i];
 
-                if(curLineLength + word.Length > Columns) {
+                if(curLineLength + word.Length > columns) {
 
                     if(curLineLength > 0) {
                         strBuilder.Append(Environment.NewLine);
                         curLineLength = 0;
                     }
 
-                    while(word.Length > Columns) {
-                        strBuilder.Append(word.Substring(0, Columns - 1) + "-");
-                        word = word.Substring(Columns - 1);
+                    while(word.Length > columns) {
+                        strBuilder.Append(word.Substring(0, columns - 1) + "-");
+                        word = word.Substring(columns - 1);
 
                         strBuilder.Append(Environment.NewLine);
                     }

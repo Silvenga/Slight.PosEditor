@@ -14,6 +14,28 @@
                       Margin="10 0 10 10"
                       ItemsSource="{Binding Path=ComPorts}"
                       SelectedItem="{Binding Path=ComName}" />
+            <Label Margin="10 10 10 0" Content="Rows:" />
+            <TextBox x:Name="RowBox" Margin="10 0 10 10">
+                <TextBox.Text>
+                    <Binding Path="Rows">
+                        <Binding.UpdateSourceTrigger>PropertyChanged</Binding.UpdateSourceTrigger>
+                        <Binding.ValidationRules>
+                            <ExceptionValidationRule />
+                        </Binding.ValidationRules>
+                    </Binding>
+                </TextBox.Text>
+            </TextBox>
+            <Label Margin="10 10 10 0" Content="Columns:" />
+            <TextBox x:Name="ColBox" Margin="10 0 10 10">
+                <TextBox.Text>
+                    <Binding Path="Columns">
+                        <Binding.UpdateSourceTrigger>PropertyChanged</Binding.UpdateSourceTrigger>
+                        <Binding.ValidationRules>
+                            <ExceptionValidationRule />
+                        </Binding.ValidationRules>
+                    </Binding>
+                </TextBox.Text>
+            </TextBox>
         </StackPanel>
         <StackPanel x:Name="ProfilePanel" />
 

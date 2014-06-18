@@ -52,11 +52,11 @@ namespace POS_Editor {
 
             Send(PosCommands.Clear);
 
-            for(int i = 0; i < PosDisplay.Rows; i++) {
+            for(int i = 0; i < display.Rows; i++) {
 
                 Send(display[i]);
 
-                if(i != PosDisplay.Rows - 1) {
+                if(i != display.Rows - 1) {
                     Send("\n");
                     Send(PosCommands.Return);
                 }
