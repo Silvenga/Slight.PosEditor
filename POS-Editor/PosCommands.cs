@@ -1,5 +1,5 @@
-﻿
-namespace POS_Editor {
+﻿namespace POS_Editor {
+
     public enum PosCommands {
 
         Version = 0x02,
@@ -8,7 +8,8 @@ namespace POS_Editor {
         OverwriteMode = 0x12,
         Clear = 0x15,
         Return = 0x0D,
-        Feed = 0x0A,
+        Feed = 0x0A
+
     }
 
     public static class PosCommandsHelper {
@@ -18,5 +19,7 @@ namespace POS_Editor {
             var temp = (char) command;
             return "" + temp;
         }
+
     }
+
 }

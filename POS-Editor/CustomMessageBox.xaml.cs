@@ -1,18 +1,33 @@
-﻿using POS_Editor.Annotations;
+﻿#region Usings
+
 using System;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Input;
 
+using POS_Editor.Annotations;
+
+#endregion
+
 namespace POS_Editor {
 
     public partial class CustomMessageBox : INotifyPropertyChanged {
 
-        private string _text;
-
         public delegate void Message(CustomMessageBox sender, string message);
 
-        public event Message Sent;
+        private string _text;
+
+        public CustomMessageBox(MainWindow window) {
+
+            InitializeComponent();
+            IsEnabledChanged += delegate {
+                SendButton.IsEnabled = IsEnabled;
+                MessageBox.IsEnabled = IsEnabled;
+            };
+
+            ParentWindow = window;
+            DataContext = this;
+        }
 
         public MainWindow ParentWindow {
             get;
@@ -32,29 +47,21 @@ namespace POS_Editor {
                 if(!PosDisplay.TryParse(value, out display, ParentWindow.Rows, ParentWindow.Columns)) {
                     SendButton.IsEnabled = false;
                     throw new ApplicationException();
-                } else {
-                    SendButton.IsEnabled = true;
                 }
+                SendButton.IsEnabled = true;
             }
         }
 
-        public CustomMessageBox(MainWindow window) {
+        public event PropertyChangedEventHandler PropertyChanged;
 
-            InitializeComponent();
-            IsEnabledChanged += delegate {
-                SendButton.IsEnabled = IsEnabled;
-                MessageBox.IsEnabled = IsEnabled;
-            };
-
-            ParentWindow = window;
-            DataContext = this;
-        }
+        public event Message Sent;
 
         protected virtual void OnSent(string message) {
 
-            Message handler = Sent;
-            if(handler != null)
+            var handler = Sent;
+            if(handler != null) {
                 handler(this, message);
+            }
         }
 
         private void Send(object sender, RoutedEventArgs e) {
@@ -64,18 +71,20 @@ namespace POS_Editor {
 
         private void MessageText_OnKeyDown(object sender, KeyEventArgs e) {
 
-            if(e.Key == Key.Enter)
+            if(e.Key == Key.Enter) {
                 Send(sender, null);
+            }
         }
-
-        public event PropertyChangedEventHandler PropertyChanged;
 
         [NotifyPropertyChangedInvocator]
         protected virtual void OnPropertyChanged(string propertyName) {
 
-            PropertyChangedEventHandler handler = PropertyChanged;
-            if(handler != null)
+            var handler = PropertyChanged;
+            if(handler != null) {
                 handler(this, new PropertyChangedEventArgs(propertyName));
+            }
         }
+
     }
+
 }

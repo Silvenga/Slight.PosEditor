@@ -1,10 +1,34 @@
-﻿
+﻿#region Usings
+
 using System;
 using System.IO.Ports;
 using System.Linq;
 
+#endregion
+
 namespace POS_Editor {
+
     public class PosManager {
+
+        public PosManager(string interfaceName) {
+
+            if(string.IsNullOrWhiteSpace(interfaceName)) {
+                throw new ArgumentException("Interface Name must have a value.");
+            }
+
+            if(!DoesDeviceExist(interfaceName)) {
+                throw new ArgumentException("COM port does not exist.");
+            }
+
+            InterfaceName = interfaceName;
+            Device = new SerialPort(InterfaceName);
+
+            Device.Open();
+
+            if(!Device.IsOpen) {
+                throw new ArgumentException("Could not open give COM port.");
+            }
+        }
 
         public string InterfaceName {
             get;
@@ -22,27 +46,11 @@ namespace POS_Editor {
             }
         }
 
-        public PosManager(string interfaceName) {
-
-            if(string.IsNullOrWhiteSpace(interfaceName))
-                throw new ArgumentException("Interface Name must have a value.");
-
-            if(!DoesDeviceExist(interfaceName))
-                throw new ArgumentException("COM port does not exist.");
-
-            InterfaceName = interfaceName;
-            Device = new SerialPort(InterfaceName);
-
-            Device.Open();
-
-            if(!Device.IsOpen)
-                throw new ArgumentException("Could not open give COM port.");
-        }
-
         public void Close() {
 
-            if(!IsReady)
+            if(!IsReady) {
                 throw new Exception("COM is not open or used.");
+            }
 
             Device.Close();
             Device = null;
@@ -54,7 +62,7 @@ namespace POS_Editor {
             Send(PosCommands.HideCursor);
             Send(PosCommands.Clear);
 
-            for(int i = 0; i < display.Rows; i++) {
+            for(var i = 0; i < display.Rows; i++) {
 
                 Send(display[i]);
 
@@ -78,11 +86,14 @@ namespace POS_Editor {
 
         public static bool DoesDeviceExist(string name) {
 
-            if(string.IsNullOrWhiteSpace(name))
+            if(string.IsNullOrWhiteSpace(name)) {
                 return false;
+            }
 
             var knownPortNames = SerialPort.GetPortNames();
             return knownPortNames.Select(x => x.Equals(name)).Any();
         }
+
     }
+
 }

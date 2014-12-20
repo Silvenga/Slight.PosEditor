@@ -32,11 +32,21 @@ namespace POS_Editor.Tests {
                 Assert.IsTrue(result);
             }
             {
-                result = PosDisplay.TryParse("Hello Hello Hello Hello Hello Hello Hello Hello Hello Hello Hello Hello Hello Hello Hello Hello Hello Hello", out display, 4, 20);
+                result =
+                    PosDisplay.TryParse(
+                        "Hello Hello Hello Hello Hello Hello Hello Hello Hello Hello Hello Hello Hello Hello Hello Hello Hello Hello",
+                        out display,
+                        4,
+                        20);
                 Assert.IsFalse(result);
             }
             {
-                result = PosDisplay.TryParse("HelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHello", out display, 4, 20);
+                result =
+                    PosDisplay.TryParse(
+                        "HelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHello",
+                        out display,
+                        4,
+                        20);
                 Assert.IsFalse(result);
             }
         }
@@ -44,7 +54,7 @@ namespace POS_Editor.Tests {
         [TestMethod]
         public void SendTest() {
 
-            PosManager manager = new PosManager("COM3");
+            var manager = new PosManager("COM3");
             PosDisplay display;
             bool result;
 
@@ -69,13 +79,25 @@ namespace POS_Editor.Tests {
                 manager.Send(display);
             }
             {
-                result = PosDisplay.TryParse("Hello Hello Hello Hello Hello Hello Hello Hello Hello Hello Hello Hello Hello Hello Hello Hello Hello Hello", out display, 4, 20);
+                result =
+                    PosDisplay.TryParse(
+                        "Hello Hello Hello Hello Hello Hello Hello Hello Hello Hello Hello Hello Hello Hello Hello Hello Hello Hello",
+                        out display,
+                        4,
+                        20);
                 Assert.IsFalse(result);
             }
             {
-                result = PosDisplay.TryParse("HelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHello", out display, 4, 20);
+                result =
+                    PosDisplay.TryParse(
+                        "HelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHello",
+                        out display,
+                        4,
+                        20);
                 Assert.IsFalse(result);
             }
         }
+
     }
+
 }

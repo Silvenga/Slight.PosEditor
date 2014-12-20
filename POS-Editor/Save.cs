@@ -1,11 +1,15 @@
-﻿using System;
+﻿#region Usings
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Web.Script.Serialization;
 
+#endregion
+
 namespace POS_Editor {
 
-    class Save {
+    internal class Save {
 
         public const string SaveLocation = "com.silvenga.pos-editor.save.db";
 
@@ -31,28 +35,32 @@ namespace POS_Editor {
 
         public static void SaveObject(Save obj) {
 
-            string json = new JavaScriptSerializer().Serialize(obj);
+            var path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), SaveLocation);
+            var json = new JavaScriptSerializer().Serialize(obj);
 
-            File.WriteAllText(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), SaveLocation), json);
+            File.WriteAllText(path, json);
         }
 
         public static Save OpenObject() {
 
-            if(!File.Exists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                    SaveLocation)))
-                return null;
+            var path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), SaveLocation);
 
-            try {
-
-                string json = File.ReadAllText(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), SaveLocation));
-                Save save = new JavaScriptSerializer().Deserialize<Save>(json);
-                return save;
-
-            } catch(Exception) {
+            if(!File.Exists(path)) {
                 return null;
             }
 
-            return null;
+            try {
+
+                var json = File.ReadAllText(path);
+                var save = new JavaScriptSerializer().Deserialize<Save>(json);
+                return save;
+
+            } catch(Exception) {
+
+                return null;
+            }
         }
+
     }
+
 }
