@@ -50,6 +50,8 @@ namespace POS_Editor {
 
         public void Send(PosDisplay display) {
 
+            Send(PosCommands.OverwriteMode);
+            Send(PosCommands.HideCursor);
             Send(PosCommands.Clear);
 
             for(int i = 0; i < display.Rows; i++) {
@@ -57,8 +59,9 @@ namespace POS_Editor {
                 Send(display[i]);
 
                 if(i != display.Rows - 1) {
-                    Send("\n");
+
                     Send(PosCommands.Return);
+                    Send(PosCommands.Feed);
                 }
             }
         }

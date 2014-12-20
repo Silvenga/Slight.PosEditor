@@ -55,6 +55,11 @@ namespace POS_Editor {
             for(int i = 0; i < Display.Length; i++) {
 
                 Display[i] = new char[Columns];
+
+                for(int j = 0; j < Columns; j++) {
+
+                    Display[i][j] = ' ';
+                }
             }
         }
 
@@ -92,6 +97,9 @@ namespace POS_Editor {
 
                 line = white + line;
 
+                for(int i = Columns - line.Length; i > 0; i--) {
+                    line += " ";
+                }
 
                 for(int i = 0; i < line.Length; i++) {
 
@@ -106,34 +114,34 @@ namespace POS_Editor {
 
             string[] words = Explode(str, SplitChars);
 
-            int curLineLength = 0;
-            StringBuilder strBuilder = new StringBuilder();
+            int currentLineLength = 0;
+            StringBuilder builder = new StringBuilder();
 
             for(int i = 0; i < words.Length; i += 1) {
 
                 string word = words[i];
 
-                if(curLineLength + word.Length > columns) {
+                if(currentLineLength + word.Length > columns) {
 
-                    if(curLineLength > 0) {
-                        strBuilder.Append(Environment.NewLine);
-                        curLineLength = 0;
+                    if(currentLineLength > 0) {
+                        builder.Append(Environment.NewLine);
+                        currentLineLength = 0;
                     }
 
                     while(word.Length > columns) {
-                        strBuilder.Append(word.Substring(0, columns - 1) + "-");
+                        builder.Append(word.Substring(0, columns - 1) + "-");
                         word = word.Substring(columns - 1);
 
-                        strBuilder.Append(Environment.NewLine);
+                        builder.Append(Environment.NewLine);
                     }
 
                     word = word.TrimStart();
                 }
-                strBuilder.Append(word);
-                curLineLength += word.Length;
+                builder.Append(word);
+                currentLineLength += word.Length;
             }
 
-            return strBuilder.ToString();
+            return builder.ToString();
         }
 
         private static string[] Explode(string str, char[] splitChars) {

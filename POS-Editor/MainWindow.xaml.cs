@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.IO;
 using System.IO.Ports;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Windows.Data;
 
@@ -90,6 +91,8 @@ namespace POS_Editor {
 
             InitializeComponent();
 
+            Window.Title = "POS Editor - " + Assembly.GetEntryAssembly().GetName().Version;
+
             Rows = 4;
             Columns = 20;
 
@@ -107,7 +110,7 @@ namespace POS_Editor {
 
             string message = "";
 
-            message += "\nCrashed on: " + e.Message + "\nSource: " + e.Source + "\nTrace: " + e.StackTrace + "\n Due to: " + e.InnerException;
+            message += "\r\nCrashed on: " + e.Message + "\r\nSource: " + e.Source + "\r\nTrace: " + e.StackTrace + "\r\nDue to: " + e.InnerException;
 
             File.AppendAllText("com.silvenga.pos-editor.crashreport.log", message);
 
